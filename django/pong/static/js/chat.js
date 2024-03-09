@@ -1,4 +1,4 @@
-import socket from './index.js';
+import { socket } from './index.js';
 
 export function chat() {
 

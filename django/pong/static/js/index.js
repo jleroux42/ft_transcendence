@@ -5,7 +5,33 @@
 // import { user } from "./user.js";
 import { router } from "./router.js";
 
-const socket = new WebSocket(`wss://${window.location.host}/ws/`);
+export var socket = new WebSocket(`wss://${window.location.host}/ws/`);
+
+socket.onclose = function (event) {
+	console.log('Socket is closed. Reconnect will be attempted in 1/10 second.', event.reason);
+	setTimeout(function () {
+		socket = new WebSocket(`wss://${window.location.host}/ws/`);
+	}, 100);
+};
+
+socket.onerror = function (event) {
+	console.log('Socket is closed. Reconnect will be attempted in 1/10 second.', event.reason);
+	setTimeout(function () {
+		socket = new WebSocket(`wss://${window.location.host}/ws/`);
+	}, 100);
+};
+
+async function waitForOpenSocket(socket) {
+	return new Promise((resolve) => {
+		if (socket.readyState !== socket.OPEN) socket.onopen = function () { resolve(); };
+		else resolve();
+	});
+}
+
+export async function sendMessage(socket, msg) {
+	await waitForOpenSocket(socket);
+	socket.send(msg);
+}
 
 document.onpopstate = router;
 window.addEventListener("popstate", router);
@@ -14,11 +40,11 @@ window.addEventListener("click", e => {
 	if (e.target.hasAttribute("url")) {
 		e.preventDefault();
 		history.pushState(null, null, e.target.getAttribute("url"));
-		router();
+		router(socket);
 	} else if (e.target.matches("[data-link]")) {
 		e.preventDefault();
 		history.pushState(null, null, e.target.getAttribute("data-link"));
-		router();
+		router(socket);
 	}
 });
 
@@ -115,5 +141,3 @@ function getCookie(name) {
 // 			});
 // 	};
 // });
-
-export default socket;
