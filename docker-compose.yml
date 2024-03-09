@@ -7,6 +7,7 @@ services:
       context: ./django
       args:
         DOMAIN:
+        EMAIL:
     environment:
       DJANGO_DEBUG: "False"
       DJANGO_SETTINGS_MODULE: "ftt.settings"
@@ -14,6 +15,7 @@ services:
     env_file: .env
     ports:
       - "443:443"
+      - "80:80"
     networks:
       - my-network
     volumes:

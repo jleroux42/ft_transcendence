@@ -5,6 +5,7 @@ WORKDIR /ftt
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ARG DOMAIN
+ARG EMAIL
 
 # RUN	openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
 # 	-out /ssl/selfsigned.crt \
@@ -12,15 +13,16 @@ ARG DOMAIN
 # 	-subj "/C=CH/ST=Vaud/L=Renens/O=42/OU=/CN=localhost"
 
 RUN pip install certbot
-RUN certbot certonly --standalone -d $DOMAIN --test-cert --cert-path "/ssl/privkey.pem" --key-path "/ssl/cert.pem"
+EXPOSE 80
+RUN certbot certonly --standalone -d $DOMAIN --test-cert --cert-path "/ssl/privkey.pem" --key-path "/ssl/cert.pem" --email $EMAIL --agree-tos --preferred-challenges http --non-interactive
 
 # /etc/letsencrypt/live/$DOMAIN
 
 RUN mkdir /ssl
-COPY --link ./ftt /ftt/ftt
-COPY --link ./pong /ftt/pong
-COPY --link ./manage.py /ftt/manage.py
-COPY --link ./requirements.txt /ftt/requirements.txt
+COPY ./ftt /ftt/ftt
+COPY ./pong /ftt/pong
+COPY ./manage.py /ftt/manage.py
+COPY ./requirements.txt /ftt/requirements.txt
 RUN pip install --no-cache-dir -U -r requirements.txt
 RUN export DJANGO_SETTINGS_MODULE=ftt.settings
 RUN python manage.py collectstatic --noinput
