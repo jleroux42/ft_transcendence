@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "Variable not found")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv("DOMAIN", "localhost")]
+ALLOWED_HOSTS = [os.getenv("DOMAIN", "error: host not found")]
 
 # Application definition
 

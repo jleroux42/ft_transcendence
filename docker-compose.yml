@@ -7,7 +7,6 @@ services:
       context: ./django
       args:
         DOMAIN:
-        EMAIL:
     environment:
       DJANGO_DEBUG: "False"
       DJANGO_SETTINGS_MODULE: "ftt.settings"
@@ -18,8 +17,8 @@ services:
       - "80:80"
     networks:
       - my-network
-    volumes:
-      - ./django:/ftt
+    # volumes:
+      # - ./django:/ftt
     # depends_on:
       # - db
     # restart: unless-stopped

@@ -490,11 +490,12 @@ def loginview(request):
         )
     elif request.method == "POST":
         load_dotenv()
+        print(f"https://{os.getenv('DOMAIN')}{reverse(callback)}"),
         request.session["state"] = base64.b64encode(os.urandom(100)).decode("ascii")
         auth_url = "{}/oauth/authorize?client_id={}&redirect_uri={}&scope={}&state={}&response_type=code".format(
             os.getenv("OAUTH_URL"),
             os.getenv("OAUTH_ID"),
-            reverse(callback),
+            f"https://{os.getenv('DOMAIN')}{reverse(callback)}",
             "public",
             request.session["state"],
         )
@@ -511,7 +512,7 @@ def callback(request):
             "client_id": os.getenv("OAUTH_ID"),
             "client_secret": os.getenv("OAUTH_SECRET"),
             "code": code,
-            "redirect_uri": reverse(callback),
+            "redirect_uri": f"https://{os.getenv('DOMAIN')}{reverse(callback)}",
             "state": state,
         },
         headers={"Accept": "application/json"},
